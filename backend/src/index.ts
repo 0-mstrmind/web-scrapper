@@ -1,7 +1,7 @@
 import express from "express";
 import type { NextFunction, Request, Response } from "express";
 import "dotenv/config";
-import { port } from "./utils/constants";
+import { port } from "./utils/constants.js";
 import { ApiError } from "./utils/ApiError";
 import { connectDB } from "./db/connectDB";
 import blogRouter from "./routes/blog.routes";

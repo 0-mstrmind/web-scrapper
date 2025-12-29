@@ -170,6 +170,6 @@ export async function getAllBlogData() {
       content: await getBlogContent(elem.blogURL),
     }))
   );
-
+  
   return dataWithContent;
 }
