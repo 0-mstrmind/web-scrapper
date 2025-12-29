@@ -1,6 +1,7 @@
 import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 import TurndownService from "turndown";
+import type { BlogData } from "../../index";
 
 const turndownService = new TurndownService();
 
@@ -79,8 +80,8 @@ const getBlogs = async (pageNumber: number): Promise<BlogData[]> => {
       .text()
       .trim();
 
-    const date = card.find(".ct-meta-element-date").text().trim();
-
+    let date = new Date(card.find(".ct-meta-element-date").text().trim());
+    
     const blogURL: string = card
       .find(".entry-title")
       .children()
@@ -132,7 +133,17 @@ async function getBlogContent(url: string): Promise<string> {
 
 
 /**
- * This function fetches 5 oldest blogs
+ * This function fetches 5 oldest blogs.
+ * 
+  * Blog data structure:
+ *
+ * @property **title**      Title of the blog
+ * @property **date**       Date of publishing
+ * @property **author**     Author of the blog
+ * @property **blogURL**    URL of the blog (opens blog content)
+ * @property **categories** Blog categories
+ * @property **content**    Blog content in *Markdown* format
+ * 
  * @returns 5 oldest blog data 
  */
 export async function getAllBlogData() {

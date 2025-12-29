@@ -4,6 +4,7 @@ import "dotenv/config";
 import { port } from "./utils/constants";
 import { ApiError } from "./utils/ApiError";
 import { connectDB } from "./db/connectDB";
+import blogRouter from "./routes/blog.routes";
 
 async function startServer() {
   const app = express();
@@ -16,6 +17,8 @@ async function startServer() {
   app.get("/", (req: Request, res: Response) => {
     return "Hi! Welcome to the app...";
   });
+  
+  app.use("/api/v1/blogs", blogRouter);
   
   app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof ApiError) {
