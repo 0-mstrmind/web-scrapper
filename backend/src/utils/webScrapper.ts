@@ -2,6 +2,8 @@ import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 import TurndownService from "turndown";
 import type { BlogData } from "../../index";
+import { JSDOM } from "jsdom";
+import { Readability } from "@mozilla/readability";
 
 const turndownService = new TurndownService();
 
@@ -103,7 +105,7 @@ const getBlogs = async (pageNumber: number): Promise<BlogData[]> => {
 };
 
 /**
- * This function returns content of the blog by visiting blog page
+ * This function returns content of the blog by visiting blog page (beyond chat only)
  * @param url url of the blog page
  * @returns content of the blog
  */
@@ -173,3 +175,50 @@ export async function getAllBlogData() {
   
   return dataWithContent;
 }
+
+/**
+ * Extracts the main article content from HTML using Mozilla Readability.
+ *
+ * @param html - Raw HTML of the page
+ * @param url - Page URL
+ * @returns Extracted article title, text content, and URL
+ */
+function extractMainContent(html: string, url: string) {
+  const dom = new JSDOM(html, { url });
+  const reader = new Readability(dom.window.document);
+  const article = reader.parse();
+
+  return {
+    title: article?.title,
+    content: article?.textContent,
+    url
+  };
+}
+
+/**
+ * Extracts the main readable content of an article from a given URL
+ *
+ * @param url - Article URL
+ * @returns Extracted article content
+ */
+export async function getSearchedArticleContent(url: string) {
+  const browser = await puppeteer.launch({
+    headless: false,
+    defaultViewport: null,
+  });
+  
+  const articlePage = await browser.newPage();
+  
+  await articlePage.goto(url, {
+    waitUntil: "domcontentloaded",
+  });
+  
+  const html = await articlePage.content();
+  const textContent = extractMainContent(html, articlePage.url());
+
+  browser.close();
+  
+  return {
+    content: textContent,
+  }
+} 

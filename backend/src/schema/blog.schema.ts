@@ -19,6 +19,18 @@ const oldBlogSchema = new Schema<BlogData>(
       type: String,
       required: true,
     },
+    updatedContent: {
+      type: String,
+    },
+    references: [
+      {
+        type: String,
+      },
+    ],
+    isUpdated: {
+      type: Boolean,
+      default: false,
+    },
     blogURL: {
       type: String,
       required: true,
@@ -37,5 +49,5 @@ const oldBlogSchema = new Schema<BlogData>(
 
 const BlogModel: Model<BlogData> =
   mongoose.models.blogs || model<BlogData>("Blog", oldBlogSchema);
-  
+
 export default BlogModel;

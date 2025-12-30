@@ -5,4 +5,7 @@ export interface BlogData {
   author: string;
   date: Date;
   content?: string;
+  updatedContent?: string;
+  isUpdated?: boolean,
+  references?: string[],
 }

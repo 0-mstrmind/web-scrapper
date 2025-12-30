@@ -5,7 +5,10 @@ import { ApiError } from "../utils/ApiError";
 import BlogModel from "../schema/blog.schema";
 import { ApiResponse } from "../utils/ApiResponse";
 import { getAllBlogData } from "../utils/webScrapper";
+import { getReferenceArticleData } from "../utils/googleSearch";
+import { enhanceArticle } from "../utils/llm";
 
+// PHASE: 1
 export const createBlog = asyncHandler(async (req: Request, res: Response) => {
   const validation = blogValidationSchema.safeParse(req.body);
 
@@ -98,27 +101,99 @@ export const deleteBlog = asyncHandler(async (req: Request, res: Response) => {
   }).send(res);
 });
 
-export const scrapBlogCreator = asyncHandler(async (req: Request, res: Response) => {
-  const data = await getAllBlogData(); // fetching scrapped blog data
-  
-  if (data == null) {
-    throw new ApiError(500, "Failed to fetch blog data");
+export const scrapBlogCreator = asyncHandler(
+  async (req: Request, res: Response) => {
+    const data = await getAllBlogData(); // fetching scrapped blog data
+
+    if (data == null) {
+      throw new ApiError(500, "Failed to fetch blog data");
+    }
+
+    const createdBlogs = await Promise.all(
+      data.map(async (elem) => {
+        const blog = await BlogModel.create(elem);
+        return blog;
+      })
+    );
+
+    if (!createdBlogs) {
+      throw new ApiError(500, "Failed to create blog");
+    }
+
+    return new ApiResponse({
+      statusCode: 200,
+      message: "Blogs created successfully",
+      data: createdBlogs,
+    }).send(res);
   }
-  
-  const createdBlogs = await Promise.all(
-    data.map(async (elem) => {
-      const blog = await BlogModel.create(elem);
-      return blog;
-    })
-  );
-  
-  if (!createdBlogs) {
-    throw new ApiError(500, "Failed to create blog");
+);
+
+
+// PHASE: 2
+
+// Enhance blog content
+export const enhanceContent = asyncHandler(
+  async (req: Request, res: Response) => {
+    const blogId = req.params.id;
+
+    if (!blogId) {
+      throw new ApiError(400, "Blog ID is required");
+    }
+
+    const blog = await BlogModel.findById({
+      _id: blogId,
+    });
+
+    if (!blog) {
+      throw new ApiError(404, "Blog not found!");
+    }
+
+    const referenceArticleData = await getReferenceArticleData(blog.title);
+
+    if (!referenceArticleData) {
+      throw new ApiError(500, "Failed to fetch reference article data");
+    }
+
+    const rawContent = [
+      {
+        title: blog.title,
+        content: blog.content,
+        url: blog.blogURL,
+      },
+      ...referenceArticleData,
+    ]
+    
+    // type safety
+    const articleContent = rawContent.map(item => ({
+      title: item.title ?? "",
+      content: item.content ?? "",
+      url: item.url ?? ""
+    }));
+    
+    const newContent = await enhanceArticle(articleContent);
+    
+    const updatedBlog = await BlogModel.findByIdAndUpdate(
+      {
+        _id: blogId
+      },
+      {
+        updatedContent: newContent,
+        isUpdated: true,
+        references: rawContent.slice(1).map((elem) => elem.url)
+      },
+      {
+        new: true,
+      }
+    );
+    
+    if (!updatedBlog) {
+      throw new ApiError(500, "Failed to update blog");
+    }
+    
+    return new ApiResponse({
+      statusCode: 200,
+      message: "Blog enhanced successfully!",
+      data: updatedBlog,
+    }).send(res);
   }
-  
-  return new ApiResponse({
-    statusCode: 200,
-    message: "Blogs created successfully",
-    data: createdBlogs
-  }).send(res);
-});
+);

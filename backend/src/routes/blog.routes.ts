@@ -1,8 +1,9 @@
 import {Router} from "express";
-import { createBlog, deleteBlog, getAllBlogs, getBlog, scrapBlogCreator, updateBlog } from "../controllers/blog.controller";
+import { createBlog, deleteBlog, enhanceContent, getAllBlogs, getBlog, scrapBlogCreator, updateBlog } from "../controllers/blog.controller";
 
 const blogRouter = Router();
 
+// PHASE: 1
 blogRouter.post("/create", createBlog);
 
 blogRouter.put("/update/:id", updateBlog);
@@ -15,5 +16,8 @@ blogRouter.delete("/:id", deleteBlog);
 
 // scrap blog from internet and save in the database
 blogRouter.post("/scrap", scrapBlogCreator);
+
+// PHASE: 2
+blogRouter.put("/enhance/:id", enhanceContent);
 
 export default blogRouter;
