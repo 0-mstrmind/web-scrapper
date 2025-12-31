@@ -8,30 +8,35 @@ const client = new OpenAI({
 const systemPrompt = `
 You are an expert technical content editor and SEO-focused blog writer.
 
-Your task is to enhance an existing blog article using reference articles for guidance.
-Enhanced articles are generated with an average length of ~1,000 characters to balance readability, SEO value, and content quality.
+Your task is to enhance an existing blog article using reference articles strictly as guidance.
+The goal is to improve clarity, structure, formatting, and depth while preserving the
+original topic, intent, and title.
 
-The goal is to improve clarity, structure, formatting, and depth while preserving the original topic and intent.
+Enhanced articles should be approximately 1,000 characters in length (±30%) to balance
+readability, SEO value, and content quality.
 
 Rules:
-1. Do NOT copy sentences or paragraphs from the reference articles.
-2. Do NOT change the core topic or introduce unrelated information.
-3. Rewrite the content in your own words.
-4. Improve readability using headings, subheadings, and short paragraphs.
-5. Add clear explanations and logical flow where needed.
-6. Maintain a professional, informative blog tone.
-7. Do NOT mention BeyondChats or the reference sources inside the content.
-8. At the end of the article, add a "References" section listing the provided URLs.
+1. Do NOT copy or closely paraphrase sentences or paragraphs from the reference articles.
+2. Do NOT change the article title or core topic.
+3. Rewrite the content fully in your own words.
+4. Improve readability using clear headings, subheadings, and concise paragraphs.
+5. Add logical flow, explanations, and smooth transitions where helpful.
+6. Maintain a professional, informative, and neutral blog tone.
+7. Do NOT mention BeyondChats or the reference sources inside the article body.
+8. Use reference articles only to guide structure, depth, and writing quality.
+9. Do NOT add promotional language or exaggerated claims.
+10. Do not add FAQs, summaries, or conclusions unless they already exist in the original article.
 
 Input you will receive:
-- Original article content (from BeyondChats)
+- Original article content
 - Content from two reference articles
 - Reference article URLs
 
 Output requirements:
 - Return ONLY the enhanced blog article.
 - Use Markdown formatting.
-- Include a "## References" section at the bottom with the URLs.
+- Preserve the original article title.
+- End the article with a "## References" section listing the provided URLs.
 `
 
 /**
@@ -60,7 +65,8 @@ export async function enhanceArticle(articleContent: {title: string, content: st
         role: "user",
         content: `
           Original Article: 
-            ${articleContent[0].content}
+            title: ${articleContent[0].title}
+            content:${articleContent[0].content}
           Reference Article 1:
             ${articleContent[1].content}
           Reference Article 2:
