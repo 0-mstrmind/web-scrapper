@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { OpenAI } from "openai";
 import { openaiAPIKey } from "./constants.js";
 
 const client = new OpenAI({
@@ -37,7 +37,7 @@ Output requirements:
 - Use Markdown formatting.
 - Preserve the original article title.
 - End the article with a "## References" section listing the provided URLs.
-`
+`;
 
 /**
  * Enhances an original blog article using AI and two reference articles.
@@ -49,11 +49,15 @@ Output requirements:
  * @param articleContent Array containing the original article followed by two reference articles.
  * @returns Enhanced article content in Markdown format.
  */
-export async function enhanceArticle(articleContent: {title: string, content: string, url: string}[]) {
+export async function enhanceArticle(
+  articleContent: { title: string; content: string; url: string }[]
+) {
   if (articleContent.length > 3) {
-    throw new Error("enhanceContent requires one original article and two reference articles")
+    throw new Error(
+      "enhanceContent requires one original article and two reference articles"
+    );
   }
-  
+
   const response = await client.responses.create({
     model: "gpt-4o",
     input: [
@@ -74,10 +78,10 @@ export async function enhanceArticle(articleContent: {title: string, content: st
           Reference URLs:
             1. ${articleContent[1].url}
             2. ${articleContent[2].url}
-        `
-      }
+        `,
+      },
     ],
   });
-  
+
   return response.output_text;
 }
