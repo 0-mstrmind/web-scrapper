@@ -1,6 +1,6 @@
-import { googleAPIKey, googleCxKey } from "./constants.ts";
+import { googleAPIKey, googleCxKey } from "./constants.js";
 import { google } from "googleapis";
-import { getSearchedArticleContent } from "./webScrapper.ts";
+import { getSearchedArticleContent } from "./webScrapper.js";
 
 /**
  * Searches Google for articles related to a query and

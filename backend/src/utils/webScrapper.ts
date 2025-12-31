@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 import TurndownService from "turndown";
-import type { BlogData } from "../../index";
+import type { BlogData } from "../../index.js";
 import { JSDOM } from "jsdom";
 import { Readability } from "@mozilla/readability";
 

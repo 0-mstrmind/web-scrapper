@@ -1,6 +1,6 @@
 import mongoose, { model, Schema } from "mongoose";
 import type { Model } from "mongoose";
-import { BlogData } from "../..";
+import type { BlogData } from "../../index.js";
 
 const oldBlogSchema = new Schema<BlogData>(
   {

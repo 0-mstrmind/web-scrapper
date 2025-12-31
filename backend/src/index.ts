@@ -1,10 +1,10 @@
 import express from "express";
 import type { NextFunction, Request, Response } from "express";
 import "dotenv/config";
-import { port, frontendURL } from "./utils/constants.ts";
-import { ApiError } from "./utils/ApiError";
-import { connectDB } from "./db/connectDB";
-import blogRouter from "./routes/blog.routes";
+import { port, frontendURL } from "./utils/constants.js";
+import { ApiError } from "./utils/ApiError.js";
+import { connectDB } from "./db/connectDB.js";
+import blogRouter from "./routes/blog.routes.js";
 import cors from "cors";
 
 async function startServer() {

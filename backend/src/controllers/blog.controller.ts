@@ -1,12 +1,12 @@
-import asyncHandler from "../utils/AsyncHandler";
+import asyncHandler from "../utils/AsyncHandler.js";
 import type { Request, Response } from "express";
-import { blogValidationSchema } from "../validators/blog.validator";
-import { ApiError } from "../utils/ApiError";
-import BlogModel from "../schema/blog.schema";
-import { ApiResponse } from "../utils/ApiResponse";
-import { getAllBlogData } from "../utils/webScrapper";
-import { getReferenceArticleData } from "../utils/googleSearch";
-import { enhanceArticle } from "../utils/llm";
+import { blogValidationSchema } from "../validators/blog.validator.js";
+import { ApiError } from "../utils/ApiError.js";
+import BlogModel from "../schema/blog.schema.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { getAllBlogData } from "../utils/webScrapper.js";
+import { getReferenceArticleData } from "../utils/googleSearch.js";
+import { enhanceArticle } from "../utils/llm.js";
 
 // PHASE: 1
 export const createBlog = asyncHandler(async (req: Request, res: Response) => {

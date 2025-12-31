@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { openaiAPIKey } from "./constants.ts";
+import { openaiAPIKey } from "./constants.js";
 
 const client = new OpenAI({
   apiKey: openaiAPIKey,
