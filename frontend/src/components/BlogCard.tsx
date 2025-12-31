@@ -1,11 +1,19 @@
 import { CalendarFold, User } from "lucide-react";
-import type { BlogCard } from "../types";
+import type { IBlogCard } from "../types";
 import { useNavigate } from "react-router-dom";
 
-const BlogCard = ({ title, content, categories, author, date }: BlogCard) => {
+const BlogCard = ({
+  _id,
+  title,
+  content,
+  categories,
+  author,
+  date,
+  isUpdated,
+}: IBlogCard) => {
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate(`/blog/${title}`);
+    navigate(`/blog/${_id}`);
   };
 
   return (
@@ -24,6 +32,13 @@ const BlogCard = ({ title, content, categories, author, date }: BlogCard) => {
               {category}
             </span>
           ))}
+          {isUpdated && (
+            <span
+              className="badge badge-primary uppercase text-xs font-semibold"
+              data-theme="winter">
+              Enhanced
+            </span>
+          )}
         </div>
 
         <div className="divider my-2"></div>

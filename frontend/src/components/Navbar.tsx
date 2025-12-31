@@ -1,19 +1,74 @@
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSelector, type RootState } from "../store/store";
+import { setBlogs } from "../store/features/blog.slice";
 
 const Navbar = () => {
+  const input = useRef<HTMLInputElement>(null);
+  const dispatch = useAppDispatch();
+  const blogs = useAppSelector((state: RootState) => state.blog);
+
+  const handleSearch = () => {
+    if (!input.current) return;
+
+    const searchTerm = input.current.value.toLowerCase().trim();
+
+    if (searchTerm === "") {
+      dispatch(setBlogs(refBlog.current)); 
+      return;
+    }
+
+    const filtered = blogs
+      .map((blog) => {
+        let score = 0;
+        const title = blog.title.toLowerCase();
+        const content = blog.content?.toLowerCase() || "";
+        const author = blog.author?.toLowerCase() || "";
+        const categories =
+          blog.categories?.map((c) => c.toLowerCase()).join(" ") || "";
+
+        if (title.includes(searchTerm)) score += 10;
+        if (title.startsWith(searchTerm)) score += 5;
+
+        if (categories.includes(searchTerm)) score += 7;
+
+        if (author.includes(searchTerm)) score += 5;
+
+        if (content.includes(searchTerm)) score += 3;
+
+        return { ...blog, searchScore: score };
+      })
+      .filter((blog) => blog.searchScore > 0)
+      .sort((a, b) => b.searchScore - a.searchScore);
+
+    dispatch(setBlogs(filtered));
+  };
+
+  const refBlog = useRef(blogs);
+
+  useEffect(() => {
+    if (blogs.length > 0 && refBlog.current.length === 0) {
+      refBlog.current = blogs;
+    }
+  }, [blogs]);
+
   return (
     <div className="navbar bg-base-100 p-4">
       <div className="flex-1">
-        <Link to="/" className="font-semibold text-lg uppercase">Write Up</Link>
+        <Link to="/" className="font-semibold text-lg uppercase">
+          Write Up
+        </Link>
       </div>
       <div className="flex gap-2">
         <input
+          ref={input}
           type="text"
           placeholder="Search"
           className="input input-bordered w-24 md:w-auto"
+          onInput={() => handleSearch()}
         />
         <div className="w-10 rounded-full flex justify-center items-center">
-          <a href="">
+          <a href="https://github.com/0-mstrmind/web-scrapper.git">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

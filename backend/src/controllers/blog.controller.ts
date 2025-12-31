@@ -74,7 +74,7 @@ export const getBlog = asyncHandler(async (req: Request, res: Response) => {
 
 export const getAllBlogs = asyncHandler(async (req: Request, res: Response) => {
   const blogs = await BlogModel.find().select(
-    "-updatedContent -references -isUpdated"
+    "-updatedContent -references"
   );
 
   if (!blogs) {
@@ -90,6 +90,7 @@ export const getAllBlogs = asyncHandler(async (req: Request, res: Response) => {
       author: blog.author,
       date: blog.date,
       categories: blog.categories,
+      isUpdated: blog.isUpdated,
     };
   });
 

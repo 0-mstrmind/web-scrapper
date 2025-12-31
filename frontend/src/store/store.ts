@@ -3,11 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import type { TypedUseSelectorHook } from "react-redux";
 import testSlice from "./features/test";
 import blogSlice from "./features/blog.slice";
+import selectedBlogSlice from "./features/blogDetails.slice";
 
 export const store = configureStore({
   reducer: {
     test: testSlice,
     blog: blogSlice,
+    selectedBlog: selectedBlogSlice
   },
 });
 

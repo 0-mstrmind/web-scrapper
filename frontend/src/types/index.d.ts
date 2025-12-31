@@ -11,10 +11,12 @@ export interface IBlog {
   references?: string[],
 }
 
-export interface BlogCard {
+export interface IBlogCard {
+  _id: string;
   title: string;
   content: string;
   categories: string[];
   author: string;
   date: Date;
+  isUpdated: boolean;
 }

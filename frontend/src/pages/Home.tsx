@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector, type RootState } from "../store/store";
 import { getAllBlogs } from "../utils/api/blog";
 import type { IBlog } from "../types";
-import BlogCard from "./BlogCard";
+import BlogCard from "../components/BlogCard";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -38,6 +38,8 @@ const Home = () => {
                 categories={blog.categories}
                 date={blog.date}
                 author={blog.author}
+                _id={blog._id}
+                isUpdated={blog.isUpdated!}
               />
             );
           })
