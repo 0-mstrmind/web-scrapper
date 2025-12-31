@@ -1,14 +1,30 @@
 import express from "express";
 import type { NextFunction, Request, Response } from "express";
 import "dotenv/config";
-import { port } from "./utils/constants.js";
+import { port, frontendURL } from "./utils/constants.ts";
 import { ApiError } from "./utils/ApiError";
 import { connectDB } from "./db/connectDB";
 import blogRouter from "./routes/blog.routes";
+import cors from "cors";
 
 async function startServer() {
   const app = express();
 
+  const whitelist = [frontendURL];
+  
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+          if (!origin || whitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+          } else {
+            callback(new Error("Not allowed by CORS"));
+          }
+        },
+        methods: ["GET"],
+        credentials: true,
+    })
+  )
   app.use(express.json());
   app.use(express.urlencoded({ limit: "4kb" }));
 

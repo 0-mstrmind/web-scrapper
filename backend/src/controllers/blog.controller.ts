@@ -73,16 +73,30 @@ export const getBlog = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const getAllBlogs = asyncHandler(async (req: Request, res: Response) => {
-  const blogs = await BlogModel.find();
+  const blogs = await BlogModel.find().select(
+    "-updatedContent -references -isUpdated"
+  );
 
   if (!blogs) {
     throw new ApiError(400, "Blogs not found");
   }
 
+  const trimmedBlog = blogs.map((blog) => {
+    return {
+      _id: blog._id,
+      title: blog.title,
+      content: blog.content?.slice(0, 100).replace(/#/g, "").trim() || "",
+      blogURL: blog.blogURL,
+      author: blog.author,
+      date: blog.date,
+      categories: blog.categories,
+    };
+  });
+
   return new ApiResponse({
     statusCode: 200,
     message: "Blogs fetched successfully",
-    data: blogs,
+    data: trimmedBlog,
   }).send(res);
 });
 
@@ -128,7 +142,6 @@ export const scrapBlogCreator = asyncHandler(
   }
 );
 
-
 // PHASE: 2
 
 // Enhance blog content
@@ -161,35 +174,35 @@ export const enhanceContent = asyncHandler(
         url: blog.blogURL,
       },
       ...referenceArticleData,
-    ]
-    
+    ];
+
     // type safety
-    const articleContent = rawContent.map(item => ({
+    const articleContent = rawContent.map((item) => ({
       title: item.title ?? "",
       content: item.content ?? "",
-      url: item.url ?? ""
+      url: item.url ?? "",
     }));
-    
+
     const newContent = await enhanceArticle(articleContent);
-    
+
     const updatedBlog = await BlogModel.findByIdAndUpdate(
       {
-        _id: blogId
+        _id: blogId,
       },
       {
         updatedContent: newContent,
         isUpdated: true,
-        references: rawContent.slice(1).map((elem) => elem.url)
+        references: rawContent.slice(1).map((elem) => elem.url),
       },
       {
         new: true,
       }
     );
-    
+
     if (!updatedBlog) {
       throw new ApiError(500, "Failed to update blog");
     }
-    
+
     return new ApiResponse({
       statusCode: 200,
       message: "Blog enhanced successfully!",
