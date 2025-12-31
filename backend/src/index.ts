@@ -31,7 +31,7 @@ async function startServer() {
   connectDB();
   
   app.get("/", (req: Request, res: Response) => {
-    return "Hi! Welcome to the app...";
+    return res.send("Hi! Welcome to the app...");
   });
   
   app.use("/api/v1/blogs", blogRouter);
