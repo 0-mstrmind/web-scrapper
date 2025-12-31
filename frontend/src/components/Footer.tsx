@@ -1,6 +1,4 @@
 import { Link } from "react-router-dom";
-import { Github } from "lucide-react";
-
 const Footer = () => {
   return (
     <footer className="bg-base-200 mt-10">

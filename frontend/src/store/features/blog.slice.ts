@@ -9,7 +9,7 @@ const blogSlice = createSlice({
   initialState,
   reducers: {
     setBlogs: (state, action: PayloadAction<IBlog[]>) => {
-      return action.payload;
+      state.push(...action.payload);
     },
     clearBlogs: () => {
       return [];
